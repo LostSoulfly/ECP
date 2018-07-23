@@ -1,0 +1,9 @@
+C:\Users\X\Desktop\ECP\ECP\ECPTests\obj\Debug\ECPTests.csprojResolveAssemblyReference.cache
+C:\Users\X\Desktop\ECP\ECP\ECPTests\bin\Debug\ECPTests.dll
+C:\Users\X\Desktop\ECP\ECP\ECPTests\bin\Debug\ECPTests.pdb
+C:\Users\X\Desktop\ECP\ECP\ECPTests\bin\Debug\ECP.dll
+C:\Users\X\Desktop\ECP\ECP\ECPTests\bin\Debug\Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll
+C:\Users\X\Desktop\ECP\ECP\ECPTests\bin\Debug\SecurityDriven.Inferno.dll
+C:\Users\X\Desktop\ECP\ECP\ECPTests\bin\Debug\ECP.pdb
+C:\Users\X\Desktop\ECP\ECP\ECPTests\obj\Debug\ECPTests.dll
+C:\Users\X\Desktop\ECP\ECP\ECPTests\obj\Debug\ECPTests.pdb
