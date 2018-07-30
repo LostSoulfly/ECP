@@ -8,6 +8,6 @@ namespace ECP.API
 {
     internal class ECPPacketHandler
     {
-        internal ECPPacketHandler() { }=
+        internal ECPPacketHandler() { }
     }
 }
