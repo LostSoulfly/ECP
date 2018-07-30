@@ -45,7 +45,6 @@ A lightweight, flexible, and extensible network communcations protocol created w
 # TODO
 ##### Updates
 <img src="https://img.shields.io/badge/status-0%25-lightgrey.svg">
-<br>
 
 - [ ] Allows both IPv4 and IPv6 addresses
 - [ ] Thread manager needs optimizing
@@ -54,14 +53,12 @@ A lightweight, flexible, and extensible network communcations protocol created w
 
 ##### New Features
 <img src="https://img.shields.io/badge/status-0%25-lightgrey.svg">
-<br>
 
 - [ ] File Transfers
 - [ ] All methods now have async versions
 
 ##### Bugs 
 <img src="https://img.shields.io/badge/status-55%25-yellowgreen.svg">
-<br>
 
 - [x] "*Broadcast All*" doesn't encrypt text with client keys
 - [x] Keep-alive packets aren't sent encrypted even if the key isn't null
