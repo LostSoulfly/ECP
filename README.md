@@ -75,7 +75,7 @@ A lightweight, flexible, and extensible network communcations protocol created w
 - .NET Framwork 4.6.1
 
 # Examples
-#### Server
+### Server
 Creating a new server using the ECP library is fairly easy. In this example, we'll create a new `ECPServer` CLI application which will just greet the user and begin accepting connections on port 80 while listening for data from those sockets.
 ```c#
 using System;
@@ -170,7 +170,7 @@ namespace ECPServer
 ```
 
 
-#### Client
+### Client
 Creating an `ECPClient` is just as easy as creating an `ECPServer`. In this example, we'll create a client with a specified username and connect to the previously created `ECPServer`, send a *"Hello, World!"* message, and await any incoming data that would normally be sent from the server to the current client.
 
 ```c#
