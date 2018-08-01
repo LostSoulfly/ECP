@@ -6,17 +6,15 @@
 <p align="left">
     <!-- Version -->
     <img src="https://img.shields.io/badge/release-1.0.0-brightgreen.svg">
-    <!-- <img src="https://img.shields.io/appveyor/ci/gruntjs/grunt.svg"> -->
     <!-- Docs -->
     <img src="https://img.shields.io/badge/docs-not%20found-lightgrey.svg">
     <!-- License -->
-    <img src="https://img.shields.io/packagist/l/doctrine/orm.svg">
+    <img src="https://img.shields.io/badge/license-MIT-blue.svg">
 </p>
 
 A lightweight, flexible, and extensible network communcations protocol created with security in mind and focuses on the productivity of both potential clients and servers. ECP is built on top of multiple layers of security and is meant to be a base for anyone looking to implement networking into their own applications; ECP comes bundled with AES in CBC mode for general data encryption, SHA256 for checksum generation and validation, and Diffie-Hellman is used as the main key exchange algorithm. Given that the library is a base for other networking applications, ECP comes with some of the basic features and tools that are normally included in likwise software such as logging and packet management.
 
 ### Requirements
-- Windows 7 SP1 & Higher
 - .NET Framwork 4.6.1
 
 # Features
@@ -48,22 +46,16 @@ A lightweight, flexible, and extensible network communcations protocol created w
 
 # TODO
 ##### Updates
-<img src="https://img.shields.io/badge/status-0%25-lightgrey.svg">
-
 - [ ] Allows both IPv4 and IPv6 addresses
 - [ ] Thread manager needs optimizing
 - [ ] Most constructors and some methods need overloading with proper properties
 - [ ] `ECPUser` objects should be generated on connection as well as their temporary names until user authentication
 
 ##### New Features
-<img src="https://img.shields.io/badge/status-0%25-lightgrey.svg">
-
 - [ ] File Transfers
 - [ ] All methods now have async versions
 
 ##### Bugs 
-<img src="https://img.shields.io/badge/status-55%25-yellowgreen.svg">
-
 - [x] "*Broadcast All*" doesn't encrypt text with client keys
 - [x] Keep-alive packets aren't sent encrypted even if the key isn't null
 - [x] Shutdown commands aren't sent encrypted even if the key isn't null
@@ -293,12 +285,11 @@ namespace ECPClient
 ```
 
 # Credits
-**Icon:** `WEWEKA DESiGNERS`
-###### https://www.iconfinder.com/weweka
-<br>
+**Icon:** `WEWEKA DESiGNERS` <br>
+https://www.iconfinder.com/weweka <br>
 
-**Encryption:** `sdrapkin`
-###### https://github.com/sdrapkin/SecurityDriven.Inferno
+**Encryption:** `sdrapkin` <br>
+https://github.com/sdrapkin/SecurityDriven.Inferno <br>
 
 # License
 Copyright © Jason Tanner (Antebyte)
