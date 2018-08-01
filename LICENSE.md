@@ -1,4 +1,4 @@
-Copyright © Jason Tanner (Antebyte)
+Copyright © ∞ Jason Tanner (Antebyte)
 
 All rights reserved.
 
