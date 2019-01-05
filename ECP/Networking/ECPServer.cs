@@ -131,7 +131,7 @@ namespace ECP
                     stream.Write(buffer, 0, buffer.Length);
                     stream.Flush();
 
-                    // Write a shutdown command to the client.
+                    // Write a shutdown packet to the client.
                     buffer = ("{SHUTDOWN}").ToBytes();
                     Client.SendBufferSize = buffer.Length;
                     stream.Write(buffer, 0, buffer.Length);
@@ -170,7 +170,7 @@ namespace ECP
                         stream.Write(buffer, 0, buffer.Length);
                         stream.Flush();
 
-                        // Write a shutdown command to the client.
+                        // Write a shutdown packet to the client.
                         buffer = ("{SHUTDOWN}").ToBytes();
                         Client.SendBufferSize = buffer.Length;
                         stream.Write(buffer, 0, buffer.Length);
@@ -190,10 +190,17 @@ namespace ECP
         /// </summary>
         /// <param name="data">Data to send the client.</param>
         /// <param name="userName">The ID of the client to send data to.</param>
-        public void Broadcast(string data, string userName)
+        public void Broadcast(string data, string userName) => Broadcast(data.ToBytes(), userName);
+
+        /// <summary>
+        /// Sends a message to currently connected <see cref="ECPClient"/>.
+        /// </summary>
+        /// <param name="data">Data to send the client.</param>
+        /// <param name="userName">The ID of the client to send data to.</param>
+        public void Broadcast(byte[] data, string userName)
         {
             TcpClient client = null;
-            foreach(var x in Clients)
+            foreach (var x in Clients)
             {
                 if (userName == x.Username)
                 {
@@ -205,7 +212,7 @@ namespace ECP
             if (client != null)
             {
                 NetworkStream stream = client.GetStream();
-                byte[] buffer = data.ToBytes();
+                byte[] buffer = data;
                 stream.Write(buffer, 0, buffer.Length);
                 stream.Flush();
             }
@@ -215,7 +222,13 @@ namespace ECP
         /// Sends a message to all clients.
         /// </summary>
         /// <param name="data">The message to broadcast to each client.</param>
-        public void BroadcastAll(string data)
+        public void BroadcastAll(string data) => BroadcastAll(data.ToBytes());
+
+        /// <summary>
+        /// Sends a message to all clients.
+        /// </summary>
+        /// <param name="data">The message to broadcast to each client.</param>
+        public void BroadcastAll(byte[] data)
         {
             // Send a message to all clients in our table.
             foreach (var Item in Clients)
@@ -225,7 +238,7 @@ namespace ECP
                 NetworkStream broadcastStream = broadcastSocket.GetStream();
                 Byte[] broadcastBytes = null;
 
-                broadcastBytes = Encoding.ASCII.GetBytes(data);
+                broadcastBytes = data;
 
                 broadcastStream.Write(broadcastBytes, 0, broadcastBytes.Length);
                 broadcastStream.Flush();
@@ -302,7 +315,6 @@ namespace ECP
     {
         #region Variables
 
-        private string[] commands = { "{HANDSHAKE}", "{HREPLY}", "{SHUTDOWN}", "{HFAIL}" };
         private ECPServer Server;
         private TcpClient Client;
         private string ClientID;
@@ -392,13 +404,13 @@ namespace ECP
                 x = data;
 
             // Parse any commands from our received data.
-            string command = x.GetString();
+            string packet = x.GetString();
             try
             {
-                if (command.Contains(commands[0]))
+                if (packet.Contains(ECPPacketType.HANDSHAKE.GetString()))
                 {
                     // Generate a new handshake request for the client.
-                    if (command.Substring(0, commands[0].Length) == commands[0])
+                    if (packet.Substring(0, ECPPacketType.HANDSHAKE.GetString().Length) == ECPPacketType.HANDSHAKE.GetString())
                     {
                         try
                         {
@@ -412,7 +424,7 @@ namespace ECP
                             Exchange = new ECPDiffieHellman(256).GenerateRequest();
 
                             // Send our packet to the client and log it.
-                            string message = "{HANDSHAKE}" + Exchange.ToString();
+                            string message = ECPPacketType.HANDSHAKE.GetString() + Exchange.ToString();
                             Server.Broadcast(message, ClientID);
                             Server.LogOutput("A handshake has been sent to " + ClientID + ".", EntryType.Notice);
                         }
@@ -423,15 +435,15 @@ namespace ECP
                         }
                     }
                 }
-                else if (command.Contains(commands[1]))
+                else if (packet.Contains(ECPPacketType.HREPLY.GetString()))
                 {
                     // Generate a new encryption key using our handshake response.
-                    if (command.Substring(0, commands[1].Length) == commands[1])
+                    if (packet.Substring(0, ECPPacketType.HREPLY.GetString().Length) == ECPPacketType.HREPLY.GetString())
                     {
                         try
                         {
                             // Parse our response to get our handshake reply.
-                            string response = command.Replace(commands[1], null);
+                            string response = packet.Replace(ECPPacketType.HREPLY.GetString(), null);
 
                             // Generate a new session key from our response.
                             Exchange.HandleResponse(response);
@@ -442,8 +454,7 @@ namespace ECP
 
                         if (Key != null)
                         {
-                            string message = Convert.ToBase64String(("Hello World!").ToBytes().Encrypt(Key));
-                            Server.Broadcast(message, ClientID);
+                            Server.Broadcast(ECPPacketType.HSUCCESS.GetString().Encrypt(Key), ClientID);
                             Server.LogOutput(Key, EntryType.General);
                         }
 

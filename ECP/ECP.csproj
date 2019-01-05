@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="Networking\ECPServer.cs" />
     <Compile Include="Networking\ECPClient.cs" />
+    <Compile Include="Networking\Packets.cs" />
     <Compile Include="Resources\Dependencies\SecurityDriven.Inferno\Cipher\AesCtrCryptoTransform.cs" />
     <Compile Include="Resources\Dependencies\SecurityDriven.Inferno\Cipher\AesFactories.cs" />
     <Compile Include="Resources\Dependencies\SecurityDriven.Inferno\CryptoRandom.cs" />

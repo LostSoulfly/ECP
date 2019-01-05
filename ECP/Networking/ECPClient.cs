@@ -48,7 +48,6 @@ namespace ECP
     {
         #region Variables
 
-        private string[] commands = { "{HANDSHAKE}", "{HREPLY}", "{SHUTDOWN}", "{HFAIL}" };
         private string Key = null;
         private bool Handshake = false;
         private TcpClient Client = new TcpClient();
@@ -107,18 +106,20 @@ namespace ECP
         }
 
         /// <summary>
-        /// Sends a message to an <see cref="ECPServer"/>.
+        /// Sends data to an <see cref="ECPServer"/>.
         /// </summary>
-        /// <param name="message">The message to send.</param>
-        public void Send(string message)
+        /// <param name="data">The message to send.</param>
+        public void Send(string data)
         {
             // Check if we're still waiting for a handshake.
             if (Handshake)
             {
                 // If we're trying to send a handshake or reply then let it through.
-                if (message.Contains(commands[0]) || message.Contains(commands[1]))
+                if (data.Contains(ECPPacketType.HANDSHAKE.GetString()) ||
+                    data.Contains(ECPPacketType.HREPLY.GetString()) ||
+                    data.Contains(ECPPacketType.HFAIL.GetString()))
                 {
-                    byte[] buffer = Encoding.ASCII.GetBytes(message + "$ECP");
+                    byte[] buffer = Encoding.ASCII.GetBytes(data + "$ECP");
                     Stream.Write(buffer, 0, buffer.Length);
                     Stream.Flush();
                 }
@@ -130,7 +131,7 @@ namespace ECP
                 // Send an encrypted message if we have a key.
                 if (Key != null)
                 {
-                    string ciphertext = Convert.ToBase64String(message.ToBytes().Encrypt(Key));
+                    string ciphertext = Convert.ToBase64String(data.ToBytes().Encrypt(Key));
                     byte[] buffer = Encoding.ASCII.GetBytes(ciphertext + "$ECP");
                     Stream.Write(buffer, 0, buffer.Length);
                     Stream.Flush();
@@ -146,7 +147,7 @@ namespace ECP
             try
             {
                 Handshake = true;
-                Send("{HANDSHAKE}");
+                Send(ECPPacketType.HANDSHAKE.GetString());
             }
             catch { }
 
@@ -190,22 +191,22 @@ namespace ECP
             string command = x.GetString();
             try
             {
-                if (command.Contains(commands[0]))
+                if (command.Contains(ECPPacketType.HANDSHAKE.GetString()))
                 {
                     // Generate a new handshake request for the server.
-                    if (command.Substring(0, commands[0].Length) == commands[0])
+                    if (command.Substring(0, ECPPacketType.HANDSHAKE.GetString().Length) == ECPPacketType.HANDSHAKE.GetString())
                     {
                         try
                         {
                             // Create a new response packet.
-                            string response = command.Replace(commands[0], null);
+                            string response = command.Replace(ECPPacketType.HANDSHAKE.GetString(), null);
                             Exchange = new ECPDiffieHellman(256).GenerateResponse(response);
 
                             // Generate a new session key from our response.
                             Key = Convert.ToBase64String(Exchange.Key);
 
                             // Send our reponse packet to the server and log it.
-                            string message = "{HREPLY}" + Exchange.ToString();
+                            string message = ECPPacketType.HREPLY.GetString() + Exchange.ToString();
                             Send(message);
                             Handshake = false;
                             LogOutput("A new session key has been generated!", EntryType.Success);
@@ -216,9 +217,11 @@ namespace ECP
                             LogOutput(Key, EntryType.General);
                     }
                 }
-                else if (command.Contains(commands[2]))
+                else if (command.Contains(ECPPacketType.SHUTDOWN.GetString()) ||
+                    command.Contains(ECPPacketType.HFAIL.GetString()))
                 {
-                    if (command.Substring(0, commands[2].Length) == commands[2])
+                    if (command.Substring(0, ECPPacketType.SHUTDOWN.GetString().Length) == ECPPacketType.SHUTDOWN.GetString() ||
+                        command.Substring(0, ECPPacketType.HFAIL.GetString().Length) == ECPPacketType.HFAIL.GetString())
                     {
                         Stream.Close();
                         Client.Close();
@@ -228,7 +231,7 @@ namespace ECP
                 }
                 else
                 {
-                    // Pass our data to our event.
+                    // Pass the data to our event.
                     DataReceived(x);
                 }
             }

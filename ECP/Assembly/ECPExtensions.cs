@@ -82,7 +82,13 @@ namespace ECP
             try { return Encoding.ASCII.GetString(data); }
             catch { return null; }
         }
-        
+
+        /// <summary>
+        /// Returns the string representation of a ECPPacketType in the format {PACKETTYPE}
+        /// </summary>
+        /// <param name="packet">Type of ECPPacketType to get the string representation of.</param>
+        public static string GetString(this ECPPacketType packet) => $"{{{Enum.GetName(typeof(ECPPacketType), packet)}}}";
+
         /// <summary>
         /// Converts a string into an array of bytes.
         /// </summary>
@@ -207,6 +213,13 @@ namespace ECP
         }
 
         /// <summary>
+        /// Transforms a string into its cryptographically strong byte array equivalent using AES.
+        /// </summary>
+        /// <param name="data">The data to transform.</param>
+        /// <param name="key">The password to use during the transformation.</param>
+        internal static byte[] Encrypt(this string data, string key) => Encrypt(data.ToBytes(), key);
+
+        /// <summary>
         /// Transforms a byte array into its cryptographically strong equivalent using AES.
         /// </summary>
         /// <param name="data">The data to transform.</param>
@@ -228,6 +241,7 @@ namespace ECP
             // Return our encrypted text.
             return ciphertext.ToArray();
         }
+
 
         /// <summary>
         /// Transforms a cryptographically strong sequence of bytes into its plainbyte equivalent using AES.
