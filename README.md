@@ -14,6 +14,13 @@
 
 A lightweight, flexible, and extensible network communcations protocol created with security in mind and focuses on the productivity of both potential clients and servers. ECP is built on top of multiple layers of security and is meant to be a base for anyone looking to implement networking into their own applications; ECP comes bundled with AES in CBC mode for general data encryption, SHA256 for checksum generation and validation, and Diffie-Hellman is used as the main key exchange algorithm. Given that the library is a base for other networking applications, ECP comes with some of the basic features and tools that are normally included in likwise software such as logging and packet management.
 
+### LostSoulfly fork todo
+- [ ] Integrate existing ECPUser
+- [ ] Allow saving/loading DH keys
+- [ ] Allow verifying known keys for past connections
+- [ ] Add signature/HMAC verification
+- [ ] Allow a simple method of verifying communications out-of-band
+
 ### Requirements
 - .NET Framwork 4.6.1
 
