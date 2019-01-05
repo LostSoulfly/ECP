@@ -38,6 +38,8 @@ using System.Text;
 using System.Threading;
 using System.Net.Sockets;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 #endregion
 namespace ECP
@@ -48,11 +50,11 @@ namespace ECP
     public class ECPServer
     {
         #region Variables
-        
+
         /// <summary>
-        /// Collection of currently connected <see cref="ECPClient"/> objects.
+        /// List of currently connected <see cref="ECPClient"/> objects.
         /// </summary>
-        public static Hashtable Clients = new Hashtable();
+        public static List<ECPUser> Clients = new List<ECPUser>();
         /// <summary>
         /// Occurs when an <see cref="ECPClient"/> has connected to the server.
         /// </summary>
@@ -69,6 +71,8 @@ namespace ECP
         /// Occurs when a log entry has been created.
         /// </summary>
         public event LogOutputHandler OnLogOutput;
+
+        public static bool ServerRunning { get; private set; }
 
         #endregion
         #region Initialization
@@ -144,7 +148,8 @@ namespace ECP
                     try
                     {
                         // Add them to our hashtable
-                        Clients.Add(data, Client);
+                        //Clients.Add(data, Client);
+                        Clients.Add(new ECPUser(Client));
 
                         // Broadcast that our client connected.
                         byte[] received = Encoding.ASCII.GetBytes(data);
@@ -183,16 +188,16 @@ namespace ECP
         /// <summary>
         /// Sends a message to currently connected <see cref="ECPClient"/>.
         /// </summary>
-        /// <param name="command">Data to send the client.</param>
-        /// <param name="id">The ID of the client to send data to.</param>
-        public void Broadcast(string command, string id)
+        /// <param name="data">Data to send the client.</param>
+        /// <param name="userName">The ID of the client to send data to.</param>
+        public void Broadcast(string data, string userName)
         {
             TcpClient client = null;
-            foreach(DictionaryEntry x in Clients)
+            foreach(var x in Clients)
             {
-                if (id == x.Key.ToString())
+                if (userName == x.Username)
                 {
-                    client = (TcpClient)x.Value;
+                    client = x.Client;
                     break;
                 }
             }
@@ -200,36 +205,28 @@ namespace ECP
             if (client != null)
             {
                 NetworkStream stream = client.GetStream();
-                byte[] buffer = command.ToBytes();
+                byte[] buffer = data.ToBytes();
                 stream.Write(buffer, 0, buffer.Length);
                 stream.Flush();
             }
         }
 
         /// <summary>
-        /// Sends a message from a client to all other clients.
+        /// Sends a message to all clients.
         /// </summary>
-        /// <param name="command">The message to broadcast to each client.</param>
-        /// <param name="uName">The client id that is trying to broadcast.</param>
-        /// <param name="flag">Broadcast telling each client who sent the message.</param>
-        public void BroadcastAll(string command, string uName, bool flag)
+        /// <param name="data">The message to broadcast to each client.</param>
+        public void BroadcastAll(string data)
         {
             // Send a message to all clients in our table.
-            foreach (DictionaryEntry Item in Clients)
+            foreach (var Item in Clients)
             {
                 TcpClient broadcastSocket;
-                broadcastSocket = (TcpClient)Item.Value;
+                broadcastSocket = Item.Client;
                 NetworkStream broadcastStream = broadcastSocket.GetStream();
                 Byte[] broadcastBytes = null;
 
-                if (flag == true)
-                {
-                    broadcastBytes = Encoding.ASCII.GetBytes(uName + " says: " + command);
-                }
-                else
-                {
-                    broadcastBytes = Encoding.ASCII.GetBytes(command);
-                }
+                broadcastBytes = Encoding.ASCII.GetBytes(data);
+
                 broadcastStream.Write(broadcastBytes, 0, broadcastBytes.Length);
                 broadcastStream.Flush();
             }
@@ -237,17 +234,19 @@ namespace ECP
 
         #endregion
         #region Utils
-        
+
         /// <summary>
         /// Removes an <see cref="ECPClient"/> from the current collection of connected clients.
         /// </summary>
-        /// <param name="id">The ID of the <see cref="ECPClient"/> to remove.</param>
-        internal void RemoveClient(string id)
+        /// <param name="userName">The ID of the <see cref="ECPClient"/> to remove.</param>
+        internal void RemoveClient(string userName)
         {
             try
             {
-                if (Clients.ContainsKey(id))
-                    Clients.Remove(id);
+                var match = Clients.First(c => c.UserID == userName);
+
+                if (match != null)
+                    Clients.Remove(match);
             }
             catch { LogOutput("The client could not be removed from the table.", EntryType.Error); }
         }
@@ -303,7 +302,7 @@ namespace ECP
     {
         #region Variables
 
-        private string[] commands = { "{HANDSHAKE}", "{HREPLY}" };
+        private string[] commands = { "{HANDSHAKE}", "{HREPLY}", "{SHUTDOWN}", "{HFAIL}" };
         private ECPServer Server;
         private TcpClient Client;
         private string ClientID;

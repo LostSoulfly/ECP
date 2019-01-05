@@ -48,7 +48,7 @@ namespace ECP
     {
         #region Variables
 
-        private string[] commands = { "{HANDSHAKE}", "{HREPLY}", "{SHUTDOWN}" };
+        private string[] commands = { "{HANDSHAKE}", "{HREPLY}", "{SHUTDOWN}", "{HFAIL}" };
         private string Key = null;
         private bool Handshake = false;
         private TcpClient Client = new TcpClient();
