@@ -88,10 +88,9 @@ namespace ECP
         /// </summary>
         /// <param name="ip">The address that an <see cref="ECPServer"/> is running.</param>
         /// <param name="user">The username to indentify with an <see cref="ECPServer"/> as.</param>
-        public void Connect(string ip, string user)
+        public void Connect(string ip, int port, string user)
         {
             string address = ip; //IPAddress.Loopback.ToString();
-            int port = 80;
             Client.Connect(ip, port);
             Stream = Client.GetStream();
             ClientConnected(ip + ":" + port.ToString());
